@@ -6,7 +6,8 @@ from pyo import*
 s = Server().boot()
 
 # objet sonore
-sine = Sine().out()
+lfo = Sine(freq=4, mul=58, add=500)
+sine = Sine(freq=lfo).out()
 
 # fenetre graphique
 s.gui(locals())
