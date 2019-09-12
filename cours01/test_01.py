@@ -6,8 +6,9 @@ from pyo import*
 s = Server().boot()
 
 # objet sonore
-lfo = Sine(freq=4, mul=58, add=500)
-sine = Sine(freq=lfo).out()
+sine = Sine().out()
+# controleur de frq, phase, et mul
+sine.ctrl()
 
 # fenetre graphique
 s.gui(locals())
