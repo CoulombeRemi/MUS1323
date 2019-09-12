@@ -6,9 +6,11 @@ from pyo import*
 s = Server().boot()
 
 # objet sonore
-sine = Sine().out()
+sine = CrossFM().out()
 # controleur de frq, phase, et mul
 sine.ctrl()
+# Graph pour voir les frq
+sp = Spectrum(sine)
 
 # fenetre graphique
 s.gui(locals())
