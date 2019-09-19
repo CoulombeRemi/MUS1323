@@ -1,0 +1,12 @@
+from pyo import* 
+s.Server().boot()
+
+fm = FM()
+fm.ctrl()
+
+filt = ButLP(fm).out(0)
+filt.ctrl()
+harmo = Harmonizer().out()
+hamro.ctrl()
+
+
