@@ -1,0 +1,40 @@
+from pyo import *
+import random
+
+s = Server().boot()
+ 
+## http://ajaxsoundstudio.com/pyodoc/examples/09-callbacks/01-periodic-calls.html
+
+## Instrument de synthèse
+lfo = LFO(freq=60, sharp=0.50, type=0, mul=1, add=0)
+
+fm_amp = Fader(dur=.1)
+fm = FM(carrier=600, ratio=0.5, mul=fm_amp, index=lfo).mix(2)
+
+delay = Delay(fm, delay=1, feedback=0, mul=.4)
+
+a = fm + delay
+verb = Freeverb(a, size=[.79,.8], damp=.9, bal=.3).out()
+
+
+## Melodie aleatoire
+##val = 0
+##global val
+##val = None
+def meloRan():
+   ## global val
+    notes = [midiToHz(m) for m in [36,43,48,55,60,62,64,65,67,69,71,72]]
+    val = random.choice(notes)
+    fm_amp.dur = val
+    print(fm.freq)
+    fm_amp.play()
+    return val
+##print(val)
+pat = Pattern(meloRan, time = .125).play()
+
+x = Spectrum(fm, size=1024, wintype=2, function=None, wintitle="Spectrum")
+
+
+s.gui(locals())
+
+## 65, 97, 130, 195, 261, 293, 329, 349, 391, 440, 523

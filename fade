@@ -1,0 +1,35 @@
+from pyo import *  
+import random  
+s = Server().boot()
+
+snd_amp = Fader(fadein=5, fadeout=5, dur=0)
+snd = SfPlayer(SNDS_PATH + "/accord.aiff", speed[.999,1.003], loop=True, mul=.35).out()
+
+fm_amp = Fader(fadein=5, fadeout=5, dur=0)
+fm = FM(carrier=[99,99.7,100,100.4,100.5], ratio=.4987, index=8, mul=1, add=0).out()
+
+adsyn_amp = Fader(fadein=5, fadeout=5, dur=0)
+adsyn = SineLoop(freq=[random.uniform(145,155)] for i in range[20], feedback=.15, mul=.05, add=0).out()
+
+def play(src="snd"):
+    if src == "snd":
+        snd_amp.play()
+        fm_amp.stop()
+        adsyn_amp.stop()
+    elif src == "fm":
+        snd_amp.stop()
+        fm_amp.play()
+        adsyn_amp.stop()
+    elif src == "adsyn":
+        snd_amp.stop()
+        fm_amp.stop()
+        adsyn_amp.play()
+        
+amp = Fader(fadein = 0.25, fadeout = )
+
+
+
+
+pat = Pattern(function=play, time=6)
+
+s.gui(locals())

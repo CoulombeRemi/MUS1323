@@ -1,0 +1,15 @@
+class Module(BaseModule):
+    def __init__(self):
+        BaseModule.__init__(self)
+        self.noise = Noise(.1)
+        self.filt = Biquad(self.noise, freq=1000, q=2, type=self.type_index)
+        self.out = Mix(self.filt, voices=self.nchnls, mul=self.env)
+
+    def type(self, index, value):
+        self.filt.type = index
+
+Interface = [
+    cgraph(name="env", label="Overall Amp", func=[(0,1),(1,1)], col="blue1"),
+    cpopup(name="type", label="Filter Type", init="Bandpass", col="green1",
+           value=["Lowpass", "Highpass", "Bandpass", "Bandstop"], rate="k")
+]
