@@ -1,0 +1,16 @@
+class Module(BaseModule):
+    def __init__(self):
+        BaseModule.__init__(self)
+        self.wave = Osc(self.mytable, freq=self.freq, mul=.2)
+        self.out = Mix(self.wave, voices=self.nchnls, mul=self.env)
+
+Interface = [
+    # Enveloppe d'amplitude (variable continue)
+    cgraph(name="env", label="Overall Amplitude", func=[(0,1),(1,1)], col="blue1"),
+    # Forme d'onde (en memoire dans une table)
+    cgraph(name="mytable", label="Waveform Shape", min=-1, max=1, table=True, size=32768,
+           func=[(0,0),(.25,1),(.75,-1),(1,0)], col="red1"),
+    # Trajectoire de frequence (variable continue, echelle logarithmique)
+    cgraph(name="freq", label="Base Frequency", min=20, max=10000, rel="log", 
+           func=[(0,250),(1,250)], col="orange1"),
+]

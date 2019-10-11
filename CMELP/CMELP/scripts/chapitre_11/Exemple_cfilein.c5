@@ -1,0 +1,10 @@
+class Module(BaseModule):
+    def __init__(self):
+        BaseModule.__init__(self)
+        self.table = self.addFilein("source")
+        self.out = Osc(self.table, freq=self.table.getRate(), mul=self.env*.2)
+        
+Interface = [
+        cfilein(name="source", label="Source Audio"),
+        cgraph(name="env", label="Overall Amp", func=[(0,1),(1,1)], col="blue1"),
+] 

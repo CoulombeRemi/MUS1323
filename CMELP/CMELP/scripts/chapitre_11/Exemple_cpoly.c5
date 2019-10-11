@@ -1,0 +1,15 @@
+class Module(BaseModule):
+    def __init__(self):
+        BaseModule.__init__(self)
+        # Duplique les transpositions en fonction du nombre de canaux
+        transXchnls = self.duplicate(self.polyphony_spread, self.nchnls)
+        # Frequence du slider * les facteurs de transpo. Ajustement de l'amplitude
+        self.saw = LFO(freq=self.freq*transXchnls, mul=self.polyphony_scaling)
+        # Mix les signaux en fonction du nombre de canaux
+        self.out = Mix(self.saw, voices=self.nchnls, mul=self.env*0.1)
+
+Interface = [
+    cgraph(name="env", label="Overall Amplitude", func=[(0,1),(1,1)], col="blue1"),
+    cslider(name="freq", label="Frequence", min=20, max=1000, init=150, rel="log", col="red1"),
+    cpoly()
+]

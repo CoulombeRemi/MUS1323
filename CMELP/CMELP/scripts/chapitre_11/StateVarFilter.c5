@@ -1,0 +1,88 @@
+# Nul besoin d'importer pyo puisque le fichier sera execute a l'interieur de
+# Cecilia, dans un environnement ou pyo est deja importe.
+
+# Definition de la classe audio. Le nom *doit absolument* etre "Module" et doit
+# aussi heriter de la classe "BaseModule" (definie a l'interne de Cecilia).
+# C'est la classe "BaseModule" qui se charge d'initialiser les variables
+# necessaires a la communication entre l'interface et la classe audio.
+class Module(BaseModule):
+    # Le string de documentation de la classe peut etre consulte dans Cecilia 
+    # avec la commande Ctrl+I (Cmd+I sous OSX)
+    """
+    State Variable Filter.
+    
+    This module implements lowpass, bandpass and highpass filters in parallel
+    and allow the user to interpolate on an axis lp -> bp -> hp.
+    
+    Sliders under the graph:
+    
+        - Cutoff/Center Freq : Cutoff frequ for lp and hp (center freq for bp)
+        - Filter Q : Q factor (inverse of bandwidth) of the filter
+        - Type (lp->bp->hp) : Interpolating factor between filters
+        - Dry / Wet : Mix between the original signal and the filtered signal
+    
+    Dropdown menus and toggles on the bottom left:
+    
+        - # of Voices : Number of voices played simultaneously (polyphony), 
+                        only available at initialization time
+        - Polyphony Chords : Pitch interval between voices (chords), 
+                             only available at initialization time
+
+    Graph only parameters :
+    
+        - Overall Amplitude : The amplitude curve applied on the total duration 
+                              of the performance
+    """
+    # Methode "constructeur", possede seulement "self" comme argument
+    def __init__(self):
+        # Appel de la methode "constructeur" de la classe parente
+        BaseModule.__init__(self)
+
+        # La methode "addSampler" de la classe BaseModule permet de recuperer 
+        # le signal provenant d'un sampler (lecture en boucle avec crossfade) 
+        # defini dans l'interface. Le string donne a la methode fait reference 
+        # au nom du "csampler", defini dans la liste de controles graphiques. 
+        self.snd = self.addSampler("snd")
+        
+        # Filtre a etat variable (interpole entre lp, bp et hp). Le filtre est 
+        # applique sur le signal du sampler (self.snd) et utilise 3 variables 
+        # crees automatiquement par la classe BaseModule: self.freq, self.q et 
+        # self.type. Ces variables ont ete crees en fonction de l'argument 
+        # "name" des trois sliders definis dans l'interface.
+        self.dsp = SVF(self.snd, self.freq, self.q, self.type)
+        
+        # "self.out" *doit absolument* etre le nom de variable du signal audio 
+        # de la fin de la chaine de traitement. Cecilia recupere cette variable 
+        # pour faire suivre le signal audio vers la section Post-Processing et 
+        # ultimement, a la sortie audio. "self.drywet" est la variable associe 
+        # au cslider(name="drywet", ...) et "self.env" est la variable associee 
+        # au cgraph(name="env", ...) definis dans l'interface.
+        self.out = Interp(self.snd, self.dsp, self.drywet, mul=self.env)
+
+# Definition de l'interface graphique. 
+# Le nom de la liste *doit absolument* etre "Interface"
+Interface = [
+    # csampler genere un lecteur en boucle de fichiers sons
+    csampler(name="snd"),
+    # cgraph cree une ligne dans le grapher
+    cgraph(name="env", label="Overall Amp", func=[(0,1),(1,1)], col="blue1"),
+    # cslider genere un potentiometre avec sa ligne de graph associee
+    cslider(name="freq", label="Cutoff/Center Freq", min=20, max=20000, 
+            init=1000, rel="log", unit="Hz", col="green1"),
+    cslider(name="q", label="Filter Q", min=0.5, max=25, init=1, rel="log", 
+            unit="x", col="green2"),
+    cslider(name="type", label="Type (lp->bp->hp)", min=0, max=1, init=0.5, 
+            rel="lin", unit="x", col="green3"),
+    cslider(name="drywet", label="Dry / Wet", min=0, max=1, init=1, rel="lin", 
+            unit="x", col="blue1"),
+    # cpoly met en place les deux menus servant a la gestion de la polyphonie
+    cpoly()
+]
+
+# Tout ce qui suit le marqueur suivant dans un fichier .c5 a ete 
+# ecrit par l'application et concerne la sauvegarde des presets.
+
+####################################
+##### Cecilia reserved section #####
+#### Presets saved from the app ####
+####################################
