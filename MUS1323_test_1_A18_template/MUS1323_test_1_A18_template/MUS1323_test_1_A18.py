@@ -32,39 +32,29 @@ Fonction de contrôle
 """
 from pyo import *
 import random
-
 s = Server().boot()
-
 sound = 'mus1323_test_1.wav'
-rand = Randi(min=300.00, max=3000.00, freq=120.00, mul=1, add=0)
-posi = 0
-
+info = sndinfo(sound)
+lfo = Sine([.1, .15]).range(300, 3000)
+amp = Fader(fadein=0.05, fadeout=0.05, dur=.035, mul=1, add=0)
+player = SfPlayer(sound, speed=1, mul=amp)
+filter = Biquad(player, freq=lfo, q=5, type=2, mul=1, add=0)
+verb = Freeverb(filter, size=0.50, damp=0.50, bal=0.25, mul=1, add=0).out()
+start = info[1] * 0.5
 def function():
-    global posi
-    global sound
-    global rand
-    # longueur du son en sec
-    info = sndinfo(sound)
-    # valeur random entre 0 et longueur du son
-    posi = random.uniform(0, info[1])
-    newPos = posi + 0.03
+    global start
+    player.offset = start
+    player.play()
+    amp.play()
+    start += random.uniform(-0.03,0.03)
     #if(posi > newPos):
     
-    if (posi < 0.0 or posi > info[1]):
-        print("info[1]", info[1])
-        print("posi", posi)
-        print("allo")
-        posi = info[1]/2
-    
+    if (start < 0.0 or start > info[1]):
+        start = info[1]*0.5
 
 
-pat = Pattern(function, time = .50).play()
 
-amp = Fader(fadein=0.05, fadeout=0.36, dur=.35, mul=1, add=0)
-player = SfPlayer(sound, speed=1, offset=posi, mul=amp).mix(2).out()
-filter = Biquad(player, freq=rand, q=5, type=2, mul=1, add=0)
-verb = Freeverb(filter, size=0.50, damp=0.50, bal=0.50, mul=1, add=0)
-amp.play()
+pat = Pattern(function, time = .05).play()
     
     
 
