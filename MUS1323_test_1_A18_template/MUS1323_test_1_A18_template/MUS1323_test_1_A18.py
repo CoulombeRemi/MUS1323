@@ -47,7 +47,6 @@ def function():
     player.play()
     amp.play()
     start += random.uniform(-0.03,0.03)
-    #if(posi > newPos):
     
     if (start < 0.0 or start > info[1]):
         start = info[1]*0.5

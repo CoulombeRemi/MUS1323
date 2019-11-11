@@ -30,30 +30,30 @@ Fonction de contrôle
     durée du son, voir sndinfo() dans le manuel.
 
 """
+
 from pyo import *
 import random
-
 s = Server().boot()
-
 sound = 'mus1323_test_1.wav'
-dur = sndinfo(sound)[1]
+dure = sndinfo(sound)[1]
+amp = Fader(fadein=0.05, fadeout=0.05, dur=0.035, mul=1, add=0)
+snd = SfPlayer(sound, speed=1, mul=amp)
+lfo = (Sine([.1, .15])).range(300, 3000)
+filter = ButBP(snd, freq=lfo, q=2, mul=1, add=0)
+verb = Freeverb(filter, size=0.50, damp=0.50, bal=0.25, mul=1, add=0).out()
+start = dure*.5
 
-f = Fader(fadein=0.005, fadeout=0.005, dur=0.035)
-sf = SfPlayer(sound, speed=1, mul=f)
-lfo = Sine([.1, .15]).range(300, 3000)
-filt = ButBP(sf, freq=lfo, q=2)
-rev = WGVerb(filt, feedback=0.9, bal=0.25).out()
-
-start = dur * 0.5
-def choose():
+def playMark():
     global start
-    sf.offset = start
-    sf.play()
-    f.play()
-    start += random.uniform(-0.03, 0.03)
-    if start < 0.0 or start > dur:
-        start = dur * 0.5
-    
-pat = Pattern(choose, 0.05).play()
+    snd.offset = start
+    snd.play()
+    amp.play()
+    start += random.uniform(-.03, .03)
+    if (start < 0.0 or start > dure):
+        start = dure/2
 
+pat = Pattern(playMark, time=.05, arg=None).play()
+
+lfoSpec = Spectrum(lfo, size=1024)
+filterSpec = Spectrum(filter, size=1024)
 s.gui(locals())
