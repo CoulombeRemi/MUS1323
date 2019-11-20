@@ -1,3 +1,7 @@
+# encoding: utf-8
+# Rémi Coulombe 20130013
+# tp03 20 nov. 2019
+
 from pyo import *
 import random
 s = Server().boot()
@@ -10,6 +14,22 @@ globamp = TrigEnv(globmet, table=env, dur=120)
 # 90 bpm notes speed
 noteSpeed = {"sixFour":0.0417, "twoOne":5.333, "oneOne":0.667, "douzHui":1}
 
+i = 1
+def chords():
+    global i
+    global melo_trigChoice
+    k = (i/2)%2
+    if k==0:
+        melo_trigChoice.choice = [midiToHz(x) for x  in melo_notes["octTwo"]]
+    elif k==1:
+        melo_trigChoice.choice = [midiToHz(x) for x  in melo_notes["octThr"]]
+    else :
+        melo_trigChoice.choice = [midiToHz(x) for x  in melo_notes["octOne"]]
+    print(melo_trigChoice.choice)
+    i+=1
+    if i > 10 : 
+        melo_trigChoice.choice = [0]
+    
 ## Arp
 arp_notes = [midiToHz(x) for x  in [60 ,55 ,59 ,57]]
 arp_env = ExpTable([ ( 0 , 0 ) , (100 ,1) , (500 ,.5) , (8000 ,.5) , (8191 ,0) ] , size =8192)
@@ -62,10 +82,11 @@ bass_instru = FM(carrier=bass_trigChoice, ratio=0.50, index=5, mul=bass_amp, add
 bass_filter = MoogLP(bass_instru, 300, res=.2*fil_lfo, mul=.65*globamp, add=0).out()
 
 ## Melo
-melo_notes = [midiToHz(x) for x  in [48 ,55 ,36,48 ,55 ,50,48 ,53 ,50,48 ,53 ,52]]
+melo_notes = {"octOne":[84, 88, 91], "octTwo":[86,89,93], "octThr":[83,86,89]}
 melo_env = ExpTable([ ( 0 , 0 ) , (1000 ,1) , (1200 ,1) , (4000 ,.5) , (8100 ,0) ] , size =8192)
 melo_beat = Beat(time=noteSpeed["oneOne"], taps=8, w1=50, w2=60, w3=0, poly=1, onlyonce=False).play(delay=noteSpeed["twoOne"]*6)
-melo_trigChoice = TrigChoice(melo_beat, choice=melo_notes, port=0.005)
+melo_chordChange = TrigFunc(melo_beat['end'], chords)
+melo_trigChoice = TrigChoice(melo_beat, choice=[midiToHz(x) for x  in melo_notes["octOne"]], port=0.005)
 melo_amp = TrigEnv(melo_beat, table=melo_env, dur=noteSpeed["oneOne"], mul=.5)
 
 melo_instru = FM(carrier=melo_trigChoice, ratio=0.50, index=5, mul=melo_amp, add=0).mix(2)
@@ -78,29 +99,6 @@ noise_amp = Fader(fadein=.01, fadeout=3.99, dur=4, mul=0.1, add=0).play(delay=no
 noise = Noise(mul=noise_amp, add=0).mix(2)
 noise_verb = Freeverb(noise, size=1, damp=0.50, bal=1, mul=1, add=0)
 noise_filter = MoogLP(noise_verb, freq=3000, res=0, mul=.25, add=0).out()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
