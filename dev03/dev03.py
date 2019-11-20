@@ -66,9 +66,9 @@ pad_amp = TrigEnv(pad_beat, table=pad_env, dur=noteSpeed["twoOne"], mul=.25)
 
 pad_instru1 = SuperSaw(freq=pad_trigChoice , detune=0, bal=0, mul=pad_amp).mix(2)
 pad_instru2 = SumOsc(freq=pad_trigChoice, ratio=0.50, index=0.5, mul=pad_amp*1.2).mix(2)
-pad_Filter01 = MoogLP(pad_instru1, freq=1480, res=.22, mul=.9*globamp)
-pad_Filter02 = ButBP(pad_instru2, freq=3000, mul=1*globamp)
-pad_verb = Freeverb([pad_Filter01,pad_Filter02], size=0.50, damp=0.50, bal=0.50, mul=1, add=0).out()
+pad_Filter01 = MoogLP(pad_instru1, freq=1480, res=.22, mul=.9)
+pad_Filter02 = ButBP(pad_instru2, freq=3000, mul=1)
+pad_verb = Freeverb([pad_Filter01,pad_Filter02], size=0.50, damp=0.50, bal=0.50, mul=1*globamp, add=0).out()
 
 ## Bass
 bass_notes = [midiToHz(x) for x  in [48,38,41,40]]
@@ -79,7 +79,7 @@ bass_amp = TrigEnv(bass_beat, table=bass_env, dur=noteSpeed["twoOne"], mul=.25)
 fil_lfo = Sine(freq=1/noteSpeed["twoOne"], phase=0, mul=1, add=0)
 
 bass_instru = FM(carrier=bass_trigChoice, ratio=0.50, index=5, mul=bass_amp, add=0).mix(2)
-bass_filter = MoogLP(bass_instru, 300, res=.2*fil_lfo, mul=.65*globamp, add=0).out()
+bass_filter = MoogLP(bass_instru, 300, res=.5*fil_lfo, mul=.65*globamp, add=0).out()
 
 ## Melo
 melo_notes = {"octOne":[84, 88, 91], "octTwo":[86,89,93], "octThr":[83,86,89]}
@@ -98,7 +98,7 @@ melo_rev = Freeverb(melo_delay, size=.9, damp=0.50, bal=0.7, mul=.5*globamp, add
 noise_amp = Fader(fadein=.01, fadeout=3.99, dur=4, mul=0.1, add=0).play(delay=noteSpeed["twoOne"]*6)
 noise = Noise(mul=noise_amp, add=0).mix(2)
 noise_verb = Freeverb(noise, size=1, damp=0.50, bal=1, mul=1, add=0)
-noise_filter = MoogLP(noise_verb, freq=3000, res=0, mul=.25, add=0).out()
+noise_filter = MoogLP(noise_verb, freq=3000, res=0, mul=.25, add=0)#.out()
 
 
 
