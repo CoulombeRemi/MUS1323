@@ -17,16 +17,14 @@ class Waha:
 
 s = Server().boot()
 
-sf = SfPlayer("drum.wav", speed=1, loop=True, mul=0.4)
-fol = Follower(sf, freq=20, mul=1, add=0)
+sf = SfPlayer("drum.wav", speed=1, loop=True, mul=1)
+fol = PeakAmp(sf)
 
 
-
+ 
 output = Waha(sf, 200, 20, 2000, 6).out()
 output.filter.ctrl()
+    
 
-
-
-
-#p = Print(fol, method=0, interval=.1, message="RMS")
+p = Print(fol, method=0, interval=.1, message="RMS")
 s.gui(locals())
