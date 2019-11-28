@@ -1,0 +1,32 @@
+class Module(BaseModule):
+    def __init__(self)
+        BaseModule.__init__(self)
+        
+
+        self.src = self.addSampler("snd")
+        self.src2 = self.addSampler("snd2")
+        
+        self.snd3 = sefl.src * self.src2
+        
+        # pour "freq=", il faut mettre le nom du cgraph declare en bas
+        self.filt = Biquad(self.snd3, freq=self.cutoff, q=self.q, type=self.filtertype_index)
+        
+        # utile si ca ne sort pas en stereo a la base (***il me semble***)
+        self.out = Mix(self.filt, voices=self.nchnls, mul=self.env)
+    
+    def filtertype(self, index, value):
+        self.filter.type = index
+    
+
+Interface = {
+    csampler(name="snd", label="Choisir un son"),
+    csampler(name="snd2", label="Choisir un son"),
+    # *** Voir la difference entre cgraph et cslider ***
+    # si on met un cgraph, on voit la ligne dans le graphique.
+    # si on met seulement un cslider, on ne voit pas de ligne dans le graphique, mais on peut quand meme controler le param.
+    cgraph(name="env", label="Overall Amplitude", func=[(0,1), (1,1)], col="blue1"),
+    #cgraph(name="cutoff", label="low-pass cutoff"min=100, max=15000, rel="log", func=[(0,10000), (0.5, 5000), (1, 100)], col="red1"),
+    cslider(name="cutoff", label="low-pass cutoff"min=100, max=15000, rel="log", init=5000, unit="Hz", col="red1"),
+    cslider(name="q", label="lowpass q", min=1, max=50, rel="log", init=2, unit="Q", col="green2"),
+    cpopup(name="filtertype", label="filtertype", value=["Lowpass", "Highpass", "Bandpass", "Bandstop"], init="Lowpass", col="red2"),
+    cpoly()
