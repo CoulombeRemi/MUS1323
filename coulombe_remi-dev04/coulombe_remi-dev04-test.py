@@ -8,24 +8,28 @@ class Waha:
 
 
     def __init__(self, son, min, max, que):
-        ampToFrq = amp*20000
+        self.ampToFrq = amp*20000
         self.min = min
         self.max = max
-        self.filter = ButBP(son, freq=self.min_max(ampToFrq), q=que, mul=0.75, add=0)
+        self.filter = ButBP(son, freq=self.min_max(), q=que, mul=0.75, add=0)
         
         p = Print(amp, method=0, interval=0.25, message="ampToFrq: ")
         
     # https://stackoverflow.com/questions/5996881/how-to-limit-a-number-to-be-within-a-specified-range-python
-    def min_max(freqInit):
-        if freqInit < self.min:
+    def min_max(self):
+        if self.ampToFrq < self.min:
             print("mini")
             return self.min
-        elif freqInit > self.max:
+        elif self.ampToFrq > self.max:
             print("maxi")
             return self.max
         else:
             print("same")
-            return freqInit
+            return self.ampToFrq
+            
+    # https://stackoverflow.com/questions/32447397/how-to-check-if-a-variables-value-has-changed/38143715#38143715
+
+            
 
     #print(min_max(10, 1, 25))
 
@@ -49,7 +53,7 @@ amp = PeakAmp(sf) ## get peak amplitude from sound file
 
 
  
-output = Waha(sf, 1500, 2000, 6).out() # pass arg. to class and output it
+output = Waha(sf, -100, 50000, 6).out() # pass arg. to class and output it
 output.filter.ctrl() # access filter controls from class Waha
 
 
