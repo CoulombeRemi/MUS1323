@@ -6,23 +6,10 @@ from pyo import *
 
 class Waha:
     def __init__(self, son, min, max, que):
-        ampToFrq = amp * (max - min) + min # define the range between the min and max
-        self.filter = ButBP(son, freq=ampToFrq, q=que, mul=0.75, add=0)
-        
-    # https://stackoverflow.com/questions/5996881/how-to-limit-a-number-to-be-within-a-specified-range-python
-    #def min_max(self):
-        #if self.ampToFrq < self.min:
-        #    print("mini")
-        #    return self.min
-        #elif self.ampToFrq > self.max:
-        #    print("maxi")
-        #    return self.max
-        #else:
-        #    print("same")
-        #    return self.ampToFrq
-            
-    # https://stackoverflow.com/questions/32447397/how-to-check-if-a-variables-value-has-changed/38143715#38143715
+        self.ampToFrq = amp * (max - min) + min # define the range between the min and max
+        self.filter = ButBP(son, freq=self.ampToFrq, q=que, mul=0.75, add=0)
 
+    
     def out(self, chnl=0):
         self.filter.out()
         return self
@@ -40,9 +27,11 @@ sf.out()
 
 
 
-output = Waha(sf, 20, 20000, 6).out() # pass arg. to class and output it
+output = Waha(sf, 500, 1000, 6).out() # pass arg. to class and output it
+
 output.filter.ctrl() # access filter controls from class Waha
 
+p = Print(output.ampToFrq, method=0, interval=0.25, message="Waha frq")
 
 
 s.gui(locals())
